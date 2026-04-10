@@ -2,7 +2,7 @@
 
 ## Video Demo
 
-<iframe width="855" height="481" src="https://www.youtube.com/embed/4VTAKrCt2AM" title="care connect demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![Care Connect Demo](https://img.youtube.com/vi/4VTAKrCt2AM/maxresdefault.jpg)](https://www.youtube.com/watch?v=4VTAKrCt2AM)
 
 ## 📋 Overview
 
