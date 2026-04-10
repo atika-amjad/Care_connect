@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Care Connect</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Lora:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green:#4CAF84;--green-d:#3a9a6e;--green-bg:#f0faf5;
+  --purple:#7C6FF7;--purple-bg:#f3f1ff;
+  --orange:#F5924E;--orange-bg:#fff4ed;
+  --blue:#4A9EDF;--blue-bg:#eef6fd;
+  --red:#E05C6A;--red-bg:#fef0f1;
+  --bg:#F7F8FC;--white:#fff;
+  --text:#1a1d2e;--text2:#5a5f7a;--text3:#9499b5;
+  --border:#e8eaf3;--radius:16px;--radius-sm:10px;
+  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow-md:0 4px 24px rgba(0,0,0,.1);
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* SETUP */
+#setupScreen{position:fixed;inset:0;background:linear-gradient(135deg,#4CAF84,#7C6FF7);display:flex;align-items:center;justify-content:center;z-index:1000}
+.setup-box{background:#fff;border-radius:24px;padding:40px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);text-align:center}
+.setup-logo{font-size:48px;margin-bottom:12px}
+.setup-box h1{font-family:'Lora',serif;font-size:26px;color:var(--text);margin-bottom:6px}
+.setup-box p{font-size:14px;color:var(--text2);margin-bottom:28px;line-height:1.6}
+.setup-input{width:100%;padding:14px 18px;border-radius:12px;border:2px solid var(--border);font-family:'Nunito',sans-serif;font-size:15px;outline:none;transition:border-color .2s;margin-bottom:16px;color:var(--text)}
+.setup-input:focus{border-color:var(--green)}
+.setup-btn{width:100%;padding:14px;border-radius:12px;background:var(--green);color:#fff;border:none;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.setup-btn:hover{background:var(--green-d);transform:translateY(-1px)}
+
+/* APP */
+#app{display:none}
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:240px;flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto;transition:transform .3s}
+.sb-top{padding:20px 18px 16px;border-bottom:1px solid var(--border)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.sb-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:17px}
+.sb-brand-name{font-family:'Lora',serif;font-size:16px;font-weight:600;color:var(--text)}
+.sb-user{display:flex;align-items:center;gap:10px;background:var(--green-bg);border-radius:var(--radius-sm);padding:10px 12px}
+.sb-av{width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:700;color:var(--text)}
+.sb-urole{font-size:10px;color:var(--text3)}
+
+.sb-nav{padding:12px 10px;flex:1}
+.sb-lbl{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding:0 10px;margin:12px 0 5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .18s;margin-bottom:2px}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--green-bg);color:var(--green);font-weight:700}
+.nav-item.active .nic{background:var(--green);color:#fff}
+.nav-item.cr.active{background:var(--red-bg);color:var(--red)}
+.nav-item.cr.active .nic{background:var(--red)}
+.nic{width:28px;height:28px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .18s}
+.nav-item:hover .nic{background:var(--green-bg)}
+.nav-item.cr:hover .nic{background:var(--red-bg)}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;padding:26px 28px;min-height:100vh}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.topbar h1{font-family:'Lora',serif;font-size:22px;font-weight:600;color:var(--text)}
+.topbar p{font-size:12px;color:var(--text3);margin-top:2px}
+.topbar-r{display:flex;align-items:center;gap:10px}
+.top-ic{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--white);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+
+/* LANGUAGE TOGGLE */
+.lang-toggle{display:flex;align-items:center;gap:6px;background:var(--green-bg);border:2px solid var(--green);border-radius:30px;padding:2px 2px;height:36px;cursor:pointer;user-select:none}
+.lang-toggle-btn{width:32px;height:32px;border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all .3s;background:transparent;color:var(--text2)}
+.lang-toggle-btn.active{background:var(--green);color:#fff}
+.lang-txt{font-size:11px;font-weight:700;color:var(--text2);padding:0 4px;min-width:28px;text-align:center;transition:color .3s}
+.lang-txt.active{color:var(--green);font-weight:700}
+
+/* PAGES */
+.page{display:none;animation:fu .3s ease}
+.page.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px}
+.ct{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+
+/* DASHBOARD */
+.d-welcome{background:linear-gradient(135deg,var(--green) 0%,#5bb88a 40%,var(--purple) 100%);border-radius:var(--radius);padding:24px 26px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden}
+.d-welcome::after{content:'💚';position:absolute;right:22px;top:50%;transform:translateY(-50%);font-size:55px;opacity:.15}
+.d-welcome h2{font-family:'Lora',serif;font-size:20px;font-weight:600;margin-bottom:5px}
+.d-welcome p{font-size:13px;opacity:.85;line-height:1.5;max-width:320px}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.sbox{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);padding:16px;box-shadow:var(--shadow);transition:transform .2s}
+.sbox:hover{transform:translateY(-2px)}
+.s-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px}
+.s-val{font-size:22px;font-weight:700;color:var(--text)}
+.s-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.empty{text-align:center;padding:28px 16px;color:var(--text3)}
+.empty .ei{font-size:32px;margin-bottom:8px}
+.empty p{font-size:12px;line-height:1.6}
+.empty a{color:var(--green);cursor:pointer;font-weight:700}
+
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qa-btn{display:flex;align-items:center;gap:10px;padding:12px;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;border:1px solid var(--border)}
+.qa-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.qa-ic{font-size:20px}
+.qa-lbl{font-size:12px;font-weight:700;color:var(--text)}
+.qa-sub{font-size:10px;color:var(--text3);margin-top:1px}
+
+/* MOOD */
+.mood-emojis{display:flex;justify-content:space-around;padding:8px 0;margin-bottom:18px}
+.mo{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:transform .2s;padding:8px 10px;border-radius:12px;border:2px solid transparent}
+.mo:hover{transform:scale(1.08)}
+.mo.sel{background:var(--green-bg);border-color:var(--green);transform:scale(1.1)}
+.mo span:first-child{font-size:36px}
+.mo .ml{font-size:10px;color:var(--text2);font-weight:700}
+
+.rg{margin-bottom:14px}
+.rg label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);font-weight:700;margin-bottom:7px}
+.rg label span:last-child{background:var(--green);color:#fff;padding:2px 9px;border-radius:20px;font-size:11px}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:3px;background:var(--border);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--green);cursor:pointer;box-shadow:0 2px 6px rgba(76,175,132,.35)}
+
+.tw{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}
+.tag{padding:5px 12px;border-radius:30px;font-size:11px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text2)}
+.tag.on{background:var(--green);color:#fff;border-color:var(--green)}
+
+textarea.na{width:100%;padding:11px 13px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:13px;resize:none;outline:none;transition:border-color .2s;background:var(--bg);color:var(--text);line-height:1.6}
+textarea.na:focus{border-color:var(--green)}
+
+.mh-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--white);margin-bottom:9px;animation:fu .3s ease}
+.mh-em{font-size:26px}
+.mh-info{flex:1;min-width:0}
+.mh-top{font-size:12px;font-weight:700;color:var(--text)}
+.mh-tags{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mh-meta{text-align:right;flex-shrink:0}
+.mh-date{font-size:10px;color:var(--text3)}
+.mh-sc{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:3px;display:inline-block}
+
+/* JOURNAL */
+.pr-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.pr-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .18s}
+.pr-btn:hover{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+
+.ja{width:100%;min-height:200px;padding:15px 17px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-family:'Lora',serif;font-size:14px;line-height:1.9;resize:vertical;outline:none;transition:border-color .2s;color:var(--text);background:var(--white)}
+.ja:focus{border-color:var(--purple)}
+.ja::placeholder{color:var(--text3);font-style:italic}
+
+.jf{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.wc{font-size:11px;color:var(--text3)}
+
+.je{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:9px;cursor:pointer;transition:all .2s;animation:fu .3s ease}
+.je:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.je-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.je-title{font-size:13px;font-weight:700;color:var(--text)}
+.je-date{font-size:10px;color:var(--text3);white-space:nowrap;margin-left:8px}
+.je-prev{font-size:12px;color:var(--text2);line-height:1.5}
+
+/* THERAPIST */
+.fr{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.fc{padding:7px 15px;border-radius:30px;font-size:12px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;transition:all .18s;color:var(--text2)}
+.fc.on{background:var(--purple);color:#fff;border-color:var(--purple)}
+
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.tc{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px;transition:all .2s}
+.tc:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.t-hd{display:flex;gap:11px;margin-bottom:12px}
+.t-av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.t-nm{font-size:13px;font-weight:700;color:var(--text)}
+.t-sp{font-size:11px;color:var(--text3);margin-top:1px}
+.t-st{font-size:11px;color:#f5a623;margin-top:2px}
+.t-tgs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.t-tg{font-size:10px;padding:3px 9px;border-radius:20px;background:var(--purple-bg);color:var(--purple);font-weight:700}
+.t-ft{display:flex;justify-content:space-between;align-items:center}
+.t-av2{font-size:11px;font-weight:700}
+.bk-btn{padding:7px 16px;border-radius:30px;font-size:12px;font-weight:700;background:var(--purple);color:#fff;border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.bk-btn:hover{background:#6a5ee0;transform:scale(1.03)}
+
+/* MEDITATION */
+.bh{background:linear-gradient(135deg,var(--purple-bg),var(--blue-bg));border:1px solid var(--border);border-radius:var(--radius);padding:32px;text-align:center;margin-bottom:20px}
+.br{width:120px;height:120px;border-radius:50%;margin:0 auto 18px;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;transition:all .3s;box-shadow:0 0 0 0 rgba(124,111,247,.3)}
+.br.go{animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(124,111,247,.4)}50%{transform:scale(1.13);box-shadow:0 0 0 26px rgba(124,111,247,0)}}
+.bt{font-family:'Lora',serif;font-size:18px;color:var(--text);margin-bottom:5px}
+.bs{font-size:12px;color:var(--text3)}
+.bb{display:flex;gap:9px;justify-content:center;margin-top:16px}
+
+.ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.ex{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);padding:18px;text-align:center;cursor:pointer;transition:all .2s}
+.ex:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.ex-ic{font-size:30px;margin-bottom:9px}
+.ex-nm{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.ex-dr{font-size:10px;color:var(--text3)}
+.ex-bg{font-size:10px;padding:3px 9px;border-radius:20px;display:inline-block;margin-top:7px;font-weight:700}
+
+/* GROUPS */
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.gc{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.gb{height:65px;display:flex;align-items:center;justify-content:center;font-size:30px}
+.gbody{padding:14px 16px}
+.gn{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.gd{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:12px}
+.gft{display:flex;justify-content:space-between;align-items:center}
+.gc-cnt{font-size:11px;color:var(--text3)}
+.jn{padding:6px 16px;border-radius:30px;font-size:12px;font-weight:700;border:1.5px solid var(--green);color:var(--green);background:transparent;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.jn:hover,.jn.on{background:var(--green);color:#fff}
+
+/* CRISIS */
+.cr-top{background:linear-gradient(135deg,#E05C6A,#9B6FF7);border-radius:var(--radius);padding:24px 26px;color:#fff;margin-bottom:20px}
+.cr-top h2{font-family:'Lora',serif;font-size:20px;margin-bottom:5px}
+.cr-top p{font-size:12px;opacity:.9;line-height:1.6;max-width:460px}
+.hl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-bottom:20px}
+.hl{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);padding:18px;box-shadow:var(--shadow)}
+.hl-ic{font-size:24px;margin-bottom:7px}
+.hl-nm{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.hl-no{font-size:18px;font-weight:700;color:var(--red);margin-bottom:2px}
+.hl-hr{font-size:10px;color:var(--text3);margin-bottom:12px}
+.cbtn{width:100%;padding:8px;border-radius:30px;font-size:12px;font-weight:700;background:var(--red);color:#fff;border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.cbtn:hover{background:#c74d59}
+.cp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cp-item{padding:14px;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;border:1px solid var(--border)}
+.cp-item:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.cp-ic{font-size:22px;margin-bottom:5px}
+.cp-nm{font-size:12px;font-weight:700}
+.cp-ds{font-size:10px;color:var(--text3);margin-top:1px}
+
+/* BUTTONS */
+.btn{padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;display:inline-flex;align-items:center;gap:5px}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-d);transform:translateY(-1px)}
+.btn-purple{background:var(--purple);color:#fff}
+.btn-purple:hover{background:#6a5ee0}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--text2)}
+.btn-ghost:hover{background:var(--bg)}
+
+/* MODAL */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
+.ov.open{display:flex}
+.modal{background:var(--white);border-radius:20px;padding:26px 28px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:popIn .25s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.m-title{font-family:'Lora',serif;font-size:19px;margin-bottom:4px;color:var(--text)}
+.m-sub{font-size:12px;color:var(--text3);margin-bottom:18px}
+.ff{margin-bottom:12px}
+.ff label{font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:5px}
+.fi{width:100%;padding:10px 13px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:13px;outline:none;transition:border-color .2s;background:var(--bg);color:var(--text)}
+.fi:focus{border-color:var(--green)}
+.ma{display:flex;gap:9px;justify-content:flex-end;margin-top:4px}
+
+/* TOAST */
+.toast{position:fixed;bottom:26px;right:26px;z-index:999;background:var(--text);color:#fff;padding:11px 18px;border-radius:30px;font-size:12px;font-weight:700;transform:translateY(70px);opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* HAMBURGER */
+.ham{display:none;background:var(--white);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;cursor:pointer;align-items:center;justify-content:center;font-size:17px}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding:16px 14px}
+  .ham{display:flex}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .two-col{grid-template-columns:1fr}
+  .ex-grid{grid-template-columns:1fr 1fr}
+  .gg{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .ex-grid{grid-template-columns:1fr}
+  .tg{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setupScreen">
+  <div class="setup-box">
+    <div class="setup-logo">🌿</div>
+    <h1>Care Connect</h1>
+    <p>➡️ Enter your name and start your mental wellness journey</p>
+    <input class="setup-input" id="nameInput" type="text" placeholder="➡️ Enter your name..." maxlength="30">
+    <button class="setup-btn" onclick="startApp()">➡️ Get Started → </button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="sb-brand">
+        <div class="sb-icon">🌿</div>
+        <div class="sb-brand-name">Care Connect</div>
+      </div>
+      <div class="sb-user">
+        <div class="sb-av" id="sbAv">?</div>
+        <div><div class="sb-uname" id="sbNm">—</div><div class="sb-urole" id="sbRole">Wellness Member</div></div>
+      </div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-lbl" id="navMain">Main</div>
+      <div class="nav-item active" onclick="go('dashboard',this)"><div class="nic">🏠</div><span class="nav-label">Dashboard</span></div>
+      <div class="nav-item" onclick="go('mood',this)"><div class="nic">😊</div><span class="nav-label">Mood Tracker</span></div>
+      <div class="nav-item" onclick="go('journal',this)"><div class="nic">📓</div><span class="nav-label">Journal</span></div>
+      <div class="sb-lbl" id="navSupport">Support</div>
+      <div class="nav-item" onclick="go('therapists',this)"><div class="nic">👩‍⚕️</div><span class="nav-label">Therapists</span></div>
+      <div class="nav-item" onclick="go('meditation',this)"><div class="nic">🧘</div><span class="nav-label">Meditation</span></div>
+      <div class="nav-item" onclick="go('groups',this)"><div class="nic">🤝</div><span class="nav-label">Groups</span></div>
+      <div class="nav-item cr" onclick="go('crisis',this)"><div class="nic">🆘</div><span class="nav-label">Crisis Help</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:11px">
+        <button class="ham" onclick="toggleSb()">☰</button>
+        <div>
+          <h1 id="ptitle">Dashboard</h1>
+          <p id="psub" style="font-size:12px;color:var(--text3);margin-top:1px"></p>
+        </div>
+      </div>
+      <div class="topbar-r">
+        <div class="lang-toggle" onclick="toggleLanguage(event)">
+          <div class="lang-toggle-btn active" id="engBtn">EN</div>
+          <div class="lang-toggle-btn" id="urdBtn">اردو</div>
+        </div>
+        <div class="top-ic" id="notifIcon" onclick="toast(currentLang==='en'?'Notifications is not available right now.':'Notifications is not available rightnow.')">🔔</div>
+        <div class="sb-av" id="topAv" style="cursor:pointer;width:36px;height:36px;font-size:13px">?</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="pg-dashboard">
+      <div class="d-welcome">
+        <h2 id="dGreet">d-welcome here!</h2>
+        <p id="dMsg">➡️ Log your first mood and start your wellness journey..</p>
+      </div>
+      <div class="stats-row">
+        <div class="sbox"><div class="s-ic" style="background:var(--green-bg)">📅</div><div class="s-val" id="st1">0</div><div class="s-lbl" id="st1-label">Daily Streak</div></div>
+        <div class="sbox"><div class="s-ic" style="background:var(--orange-bg)">😊</div><div class="s-val" id="st2">—</div><div class="s-lbl" id="st2-label">Avg Mood (7 Days)</div></div>
+        <div class="sbox"><div class="s-ic" style="background:var(--purple-bg)">📓</div><div class="s-val" id="st3">0</div><div class="s-lbl" id="st3-label">Journal Entries</div></div>
+        <div class="sbox"><div class="s-ic" style="background:var(--blue-bg)">🧘</div><div class="s-val" id="st4">0</div><div class="s-lbl" id="st4-label">Meditation Sessions</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="ct"><span>📊</span><span id="weekMoodTitle"> This week mood...</span></div>
+          <div id="dChart"><div class="empty"><div class="ei">📊</div><p>No data available.<br><a onclick="go('mood',null)">Log Mood/a> looked for the chart.</p></div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><span>⚡</span><span id="quickActionsTitle"> Quick Actions</span></div>
+          <div class="qa-grid">
+            <div class="qa-btn" style="background:var(--green-bg);border-color:#c0e8d4" onclick="go('mood',null)"><div class="qa-ic">😊</div><div><div class="qa-lbl" id="qa1-title">Mood Log</div><div class="qa-sub" id="qa1-sub">login now</div></div></div>
+            <div class="qa-btn" style="background:var(--purple-bg);border-color:#ccc8f8" onclick="go('journal',null)"><div class="qa-ic">✍️</div><div><div class="qa-lbl" id="qa2-title">Journal</div><div class="qa-sub" id="qa2-sub">Start writing...</div></div></div>
+            <div class="qa-btn" style="background:var(--blue-bg);border-color:#bbd9f4" onclick="go('meditation',null)"><div class="qa-ic">🧘</div><div><div class="qa-lbl" id="qa3-title">Meditation</div><div class="qa-sub" id="qa3-sub">Find peace</div></div></div>
+            <div class="qa-btn" style="background:var(--orange-bg);border-color:#f8d4b8" onclick="go('therapists',null)"><div class="qa-ic">👩‍⚕️</div><div><div class="qa-lbl" id="qa4-title">Therapist</div><div class="qa-sub" id="qa4-sub">Book an Appointment</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct"><span>🕒</span><span id="lastMoodsTitle"> Last Mood Entries</span></div>
+        <div id="dRecent"><div class="empty"><div class="ei">😐</div><p id="noMoodEntryMsg">No entry found.<br><a onclick="go('mood',null)">Add first mood entry. →</a></p></div></div>
+      </div>
+    </div>
+
+    <!-- MOOD TRACKER -->
+    <div class="page" id="pg-mood">
+      <div class="card" style="margin-bottom:16px">
+        <div class="ct"><span>🌡️</span><span id="moodTitle"> How are you feeling today?</span></div>
+        <div class="mood-emojis">
+          <div class="mo" onclick="pickM(this,1,'😫','Very Bad')"><span>😫</span><span class="ml" id="em-verybad">Bohot Bura</span></div>
+          <div class="mo" onclick="pickM(this,3,'😔','Sad')"><span>😔</span><span class="ml" id="em-sad">Udaas</span></div>
+          <div class="mo" onclick="pickM(this,5,'😐','Okay')"><span>😐</span><span class="ml" id="em-okay">Theek</span></div>
+          <div class="mo" onclick="pickM(this,7,'😊','Good')"><span>😊</span><span class="ml" id="em-good">Acha</span></div>
+          <div class="mo" onclick="pickM(this,10,'🤩','Great')"><span>🤩</span><span class="ml" id="em-great">Zabardast</span></div>
+        </div>
+        <div class="rg"><label><span id="energyLevelLabel">Energy Level</span> <span id="evL">5</span></label><input type="range" min="1" max="10" value="5" id="evR" oninput="document.getElementById('evL').textContent=this.value"></div>
+        <div class="rg"><label><span id="anxietyLevelLabel">Anxiety Level</span> <span id="axL">5</span></label><input type="range" min="1" max="10" value="5" id="axR" oninput="document.getElementById('axL').textContent=this.value"></div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px" id="selectFeelingMsg">Which ones describe your feeling?</div>
+        <div class="tw" id="fTags">
+          <span class="tag" data-tag="calm" onclick="this.classList.toggle('on')">Calm</span>
+          <span class="tag" data-tag="anxiety" onclick="this.classList.toggle('on')">Anxiety</span>
+          <span class="tag" data-tag="gratitude" onclick="this.classList.toggle('on')">Gratitude</span>
+          <span class="tag" data-tag="tiredness" onclick="this.classList.toggle('on')">Tiredness</span>
+          <span class="tag" data-tag="hope" onclick="this.classList.toggle('on')">Hope</span>
+          <span class="tag" data-tag="stress" onclick="this.classList.toggle('on')">Stress</span>
+          <span class="tag" data-tag="happiness" onclick="this.classList.toggle('on')">Happiness</span>
+          <span class="tag" data-tag="loneliness" onclick="this.classList.toggle('on')">Loneliness</span>
+          <span class="tag" data-tag="excitement" onclick="this.classList.toggle('on')">Excitement</span>
+          <span class="tag" data-tag="emotional" onclick="this.classList.toggle('on')">Emotional</span>
+        </div>
+        <textarea class="na" id="mNote" rows="3" placeholder="Add something... (Optional)"></textarea>
+        <div style="margin-top:12px"><button class="btn btn-green" id="saveMoodBtn" onclick="saveMood()">💾 Save Mood</button></div>
+      </div>
+      <div class="ct"><span>📋</span> Mood History</div>
+      <div id="moodHist"><div class="empty"><div class="ei">📋</div><p>Koi record nahi.<br>Log your mood above!</p></div></div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="page" id="pg-journal">
+      <div class="card" style="margin-bottom:16px">
+        <div class="ct"><span>✍️</span> <span id="journalNewEntry">New Entry</span> <span style="margin-left:auto;font-size:10px;color:var(--text3);font-weight:400" id="jDt"></span></div>
+        <div class="pr-row">
+          <button class="pr-btn" data-prompt="gratitude" onclick="addP(currentLang==='en'?'Today I am grateful for: ':'Aaj main kis cheez ka shukrguzaar hoon: ')">💚 <span class="prompt-btn-label" id="prompt-gratitude">Gratitude</span></button>
+          <button class="pr-btn" data-prompt="challenge" onclick="addP(currentLang==='en'?'Today was challenging because: ':'Aaj ka mushkil waqt tha: ')">💭 <span class="prompt-btn-label" id="prompt-challenge">Challenge</span></button>
+          <button class="pr-btn" data-prompt="tomorrow" onclick="addP(currentLang==='en'?'Tomorrow I hope to: ':'Kal ke liye mera irada hai: ')">🌅 <span class="prompt-btn-label" id="prompt-tomorrow">Tomorrow</span></button>
+          <button class="pr-btn" data-prompt="happiness" onclick="addP(currentLang==='en'?'I felt happy when: ':'Aaj mujhe khushi mili jab: ')">😊 <span class="prompt-btn-label" id="prompt-happiness">Happiness</span></button>
+        </div>
+        <textarea class="ja" id="jArea" placeholder="Share your thoughts here... This is your safe space. 🌿"></textarea>
+        <div class="jf">
+          <span class="wc" id="jWc">0 words</span>
+          <button class="btn btn-purple" id="saveJournalBtn" onclick="saveJ()">📓 Save Entry</button>
+        </div>
+      </div>
+      <div class="ct"><span>📚</span> <span id="journalOldEntries">Past Entries</span></div>
+      <div id="jList"><div class="empty"><div class="ei">📚</div><p id="journalEmptyMsg">No journal entries yet.<br>Start writing above!</p></div></div>
+    </div>
+
+    <!-- THERAPISTS -->
+    <div class="page" id="pg-therapists">
+      <div class="fr">
+        <div class="fc on" onclick="fT(this,'all')">Sab</div>
+        <div class="fc" onclick="fT(this,'Anxiety')">Anxiety</div>
+        <div class="fc" onclick="fT(this,'Depression')">Depression</div>
+        <div class="fc" onclick="fT(this,'Trauma')">Trauma</div>
+        <div class="fc" onclick="fT(this,'Relationships')">Relationships</div>
+        <div class="fc" onclick="fT(this,'Online')">Online</div>
+      </div>
+      <div class="tg" id="tGrid"></div>
+    </div>
+
+    <!-- MEDITATION -->
+    <div class="page" id="pg-meditation">
+      <div class="bh">
+        <div class="br" id="bRing" onclick="toggleB()">🌬️</div>
+        <div class="bt" id="bT">Start breathing</div>
+        <div class="bs" id="bS">4-7-8 Breathing Technique</div>
+        <div class="bb">
+          <button class="btn btn-purple" id="bBtn" onclick="toggleB()">▶ Start</button>
+          <button class="btn btn-ghost" id="resetBtn" onclick="resetB()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="ct" style="margin-bottom:12px"><span>🧘</span> <span id="meditationExercises">Exercises</span></div>
+      <div class="ex-grid">
+        <div class="ex" data-exercise="morning-calm" onclick="doEx('Morning Calm','🌅','10 min')"><div class="ex-ic">🌅</div><div class="ex-nm" data-name="morning-calm">Morning Calm</div><div class="ex-dr" data-duration="10-min">10 minute</div><span class="ex-bg" style="background:var(--green-bg);color:var(--green)">Beginner</span></div>
+        <div class="ex" data-exercise="anxiety-relief" onclick="doEx('Anxiety Relief','💆','15 min')"><div class="ex-ic">💆</div><div class="ex-nm" data-name="anxiety-relief">Anxiety Relief</div><div class="ex-dr" data-duration="15-min">15 minute</div><span class="ex-bg" style="background:var(--purple-bg);color:var(--purple)">Guided</span></div>
+        <div class="ex" data-exercise="deep-sleep" onclick="doEx('Deep Sleep','🌙','20 min')"><div class="ex-ic">🌙</div><div class="ex-nm" data-name="deep-sleep">Deep Sleep</div><div class="ex-dr" data-duration="20-min">20 minute</div><span class="ex-bg" style="background:var(--blue-bg);color:var(--blue)">Evening</span></div>
+        <div class="ex" data-exercise="body-scan" onclick="doEx('Body Scan','🫀','12 min')"><div class="ex-ic">🫀</div><div class="ex-nm" data-name="body-scan">Body Scan</div><div class="ex-dr" data-duration="12-min">12 minute</div><span class="ex-bg" style="background:var(--orange-bg);color:var(--orange)">Healing</span></div>
+        <div class="ex" data-exercise="focus-boost" onclick="doEx('Focus Boost','🎯','8 min')"><div class="ex-ic">🎯</div><div class="ex-nm" data-name="focus-boost">Focus Boost</div><div class="ex-dr" data-duration="8-min">8 minute</div><span class="ex-bg" style="background:var(--green-bg);color:var(--green)">Work</span></div>
+        <div class="ex" data-exercise="loving-kindness" onclick="doEx('Loving Kindness','💛','18 min')"><div class="ex-ic">💛</div><div class="ex-nm" data-name="loving-kindness">Loving Kindness</div><div class="ex-dr" data-duration="18-min">18 minute</div><span class="ex-bg" style="background:var(--purple-bg);color:var(--purple)">Advanced</span></div>
+      </div>
+    </div>
+
+    <!-- GROUPS -->
+    <div class="page" id="pg-groups">
+      <div class="gg">
+        <div class="gc" data-group="anxiety-warriors"><div class="gb" style="background:var(--green-bg)">🌿</div><div class="gbody"><div class="gn" data-group-name="anxiety-warriors">Anxiety Warriors</div><div class="gd" data-group-desc="anxiety-warriors">For those managing anxiety. Share experiences in a safe space.</div><div class="gft"><span class="gc-cnt">👥 243 members</span><button class="jn" onclick="joinG(this)">Join</button></div></div></div>
+        <div class="gc" data-group="depression-support"><div class="gb" style="background:var(--purple-bg)">💜</div><div class="gbody"><div class="gn" data-group-name="depression-support">Depression Support</div><div class="gd" data-group-desc="depression-support">A circle for those navigating depression. Weekly check-ins and peer support.</div><div class="gft"><span class="gc-cnt">👥 189 members</span><button class="jn" onclick="joinG(this)">Join</button></div></div></div>
+        <div class="gc" data-group="grief-loss"><div class="gb" style="background:var(--orange-bg)">🧡</div><div class="gbody"><div class="gn" data-group-name="grief-loss">Grief &amp; Loss</div><div class="gd" data-group-desc="grief-loss">Compassion for those grieving. Share your heart without judgment.</div><div class="gft"><span class="gc-cnt">👥 97 members</span><button class="jn" onclick="joinG(this)">Join</button></div></div></div>
+        <div class="gc" data-group="young-adults"><div class="gb" style="background:var(--blue-bg)">💙</div><div class="gbody"><div class="gn" data-group-name="young-adults">Young Adults (18–25)</div><div class="gd" data-group-desc="young-adults">University stress, identity, career and relationships. You're not alone.</div><div class="gft"><span class="gc-cnt">👥 312 members</span><button class="jn" onclick="joinG(this)">Join</button></div></div></div>
+      </div>
+    </div>
+
+    <!-- CRISIS -->
+    <div class="page" id="pg-crisis">
+      <div class="cr-top"><h2 id="crisisTitle">You are not alone</h2><p id="crisisDesc">If you're in crisis, please contact one of these helplines. They are free, confidential, and available 24/7.</p></div>
+      <div class="hl-grid" id="crisisHelplines">
+        <!-- Helplines updated dynamically via updateCrisisPage() -->
+      </div>
+      <div class="card">
+        <div class="ct"><span>🧘</span> <span id="crisisCopingTitle">Coping Strategies</span></div>
+        <div class="cp-grid">
+          <div class="cp-item" style="background:var(--purple-bg);border-color:#ccc8f8" onclick="go('meditation',null)"><div class="cp-ic">🌬️</div><div class="cp-nm" style="color:var(--purple)" id="copingBreathing">Breathing</div><div class="cp-ds" id="copingBreathingDesc">4-7-8 technique</div></div>
+          <div class="cp-item" style="background:var(--green-bg);border-color:#c0e8d4" onclick="go('journal',null)"><div class="cp-ic">📓</div><div class="cp-nm" style="color:var(--green)" id="copingJournal">Journal</div><div class="cp-ds" id="copingJournalDesc">Write your feelings</div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="ov" id="bkOv">
+  <div class="modal">
+    <div class="m-title">Session Book Karein</div>
+    <div class="m-sub" id="bkDr">Appointment schedule karein</div>
+    <div class="ff"><label>Aapka Naam</label><input class="fi" id="bkNm" type="text" placeholder="Naam likhein"></div>
+    <div class="ff"><label>Email</label><input class="fi" id="bkEm" type="email" placeholder="email@example.com"></div>
+    <div class="ff"><label>Tarikh</label><input class="fi" id="bkDt" type="date"></div>
+    <div class="ff"><label>Waqt</label><select class="fi" id="bkTm"><option>10:00 AM</option><option>11:00 AM</option><option>2:00 PM</option><option>3:00 PM</option><option>5:00 PM</option></select></div>
+    <div class="ma"><button class="btn btn-ghost" onclick="closeMod()">Cancel</button><button class="btn btn-green" onclick="confirmBk()">✓ Book Karein</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+
+// LANGUAGE SYSTEM
+const LANG_DATA={
+  en:{
+    setup:{
+      title:'Care Connect',
+      intro:'➡️ Enter your name and start your mental wellness journey',
+      placeholder:'➡️ Enter your name...',
+      button:'➡️ Get Started →'
+    },
+    nav:{
+      main:'Main',
+      dashboard:'Dashboard',
+      moodTracker:'Mood Tracker',
+      journal:'Journal',
+      support:'Support',
+      therapists:'Therapists',
+      meditation:'Meditation',
+      groups:'Groups',
+      crisisHelp:'Crisis Help'
+    },
+    pages:{
+      dashboard:['Dashboard','Your wellness overview'],
+      mood:['Mood Tracker','Log your mood today'],
+      journal:['Journal','Write your thoughts'],
+      therapists:['Find Therapists','Connect with professionals'],
+      meditation:['Meditation','Find peace and calm'],
+      groups:['Support Groups','You are not alone'],
+      crisis:['Crisis Help','Immediate support available']
+    },
+    dashboard:{
+      welcome:'Welcome here!',
+      intro:'➡️ Log your first mood and start your wellness journey..',
+      streak:'Daily Streak',
+      avgMood:'Avg Mood (7 Days)',
+      journals:'Journal Entries',
+      meditations:'Meditation Sessions',
+      weekMood:'This week mood...',
+      quickActions:'Quick Actions',
+      moodLog:'Mood Log',
+      loginNow:'Login now',
+      journalWrite:'Start writing...',
+      meditate:'Find peace',
+      bookApp:'Book an Appointment',
+      noChart:'No data available. Log Mood',
+      noEntry:'No entry found. Add first mood entry. →',
+      lastMoods:'Last Mood Entries',
+      noRecent:'No entry found. Log Mood'
+    },
+    mood:{
+      title:'What are you feeling today?',
+      feeling:'How are you feeling?',
+      verybad:'Very Bad',
+      sad:'Sad',
+      okay:'Okay',
+      good:'Good',
+      great:'Great',
+      energyLevel:'Energy Level',
+      anxietyLevel:'Anxiety Level',
+      tag1:'Calm',
+      tag2:'Anxiety',
+      tag3:'Gratitude',
+      tag4:'Tiredness',
+      tag5:'Hope',
+      tag6:'Stress',
+      tag7:'Happiness',
+      tag8:'Loneliness',
+      tag9:'Excitement',
+      tag10:'Emotional',
+      note:'Add something... (Optional)',
+      saveMood:'💾 Save Mood',
+      history:'Mood History',
+      noRecord:'No records. Log your mood above!',
+      selectMood:'⚠️ Select a mood first!',
+      saved:'✅ Mood saved!'
+    },
+    journal:{
+      newEntry:'New Entry',
+      prompt1:'What am I grateful for today:',
+      prompt2:'Today was difficult when:',
+      prompt3:'My intention for tomorrow:',
+      prompt4:'I felt happy when:',
+      placeholder:'Write your heart out... this is your safe space. 🌿',
+      words:'words',
+      save:'📓 Save Entry',
+      noEntry:'⚠️ Write something first!',
+      saved:'📓 Journal entry saved!',
+      oldEntries:'Old Entries',
+      noEntries:'No journal entries. Start writing above!'
+    },
+    therapists:{
+      all:'All',
+      filterA:'Anxiety',
+      filterD:'Depression',
+      filterT:'Trauma',
+      filterR:'Relationships',
+      filterO:'Online',
+      available:'Available',
+      book:'Book Now'
+    },
+    meditation:{
+      start:'Start Breathing',
+      technique:'4-7-8 Breathing Technique',
+      begin:'▶ Start',
+      pause:'⏸ Pause',
+      resume:'▶ Resume',
+      reset:'↺ Reset',
+      exercises:'Exercises',
+      morning:'Morning Calm',
+      anxiety:'Anxiety Relief',
+      sleep:'Deep Sleep',
+      bodyscan:'Body Scan',
+      focus:'Focus Boost',
+      loving:'Loving Kindness',
+      breathIn:'Breathe In...',
+      hold:'Hold...',
+      breathOut:'Breathe Out...',
+      session:'Session paused'
+    },
+    groups:{
+      anxiety:'Anxiety Warriors',
+      anxietyDesc:'Safe space for anxiety managers. Share your experiences.',
+      members1:'👥 243 members',
+      depression:'Depression Support',
+      depressionDesc:'Circle for those going through depression. Weekly check-ins and peer support.',
+      members2:'👥 189 members',
+      grief:'Grief & Loss',
+      griefDesc:'Compassion in loss and grief. Share without judgment.',
+      members3:'👥 97 members',
+      young:'Young Adults (18–25)',
+      youngDesc:'University stress, identity, career and relationships. You\'re not alone.',
+      members4:'👥 312 members',
+      join:'Join Now',
+      joined:'✓ Joined',
+      joinedMsg:'🎉 Joined group!',
+      leftMsg:'👋 Left group'
+    },
+    crisis:{
+      title:'🆘 You Are Not Alone',
+      intro:'If you are going through a difficult time, please call these helplines. They are free, confidential and available 24/7.',
+      umang:'Umang Pakistan',
+      umangTime:'Mon–Sat, 3 PM – 9 PM',
+      rescue:'Rescue Emergency',
+      rescueTime:'24/7 Available',
+      rozan:'Rozan Counseling',
+      rozanTime:'Weekdays 9 AM – 5 PM',
+      icall:'iCall (Online Chat)',
+      icallTime:'Mon–Sat 8 AM – 10 PM',
+      call:'Call Now',
+      chat:'Chat Now',
+      coping:'Coping Strategies Right Now',
+      breathing:'Breathing',
+      breathingTip:'4-7-8 technique'
+    },
+    booking:{
+      title:'Book a Session',
+      name:'Your Name',
+      namePlaceholder:'Enter your name',
+      email:'Email',
+      emailPlaceholder:'email@example.com',
+      date:'Date',
+      time:'Time',
+      cancel:'Cancel',
+      confirm:'✓ Book Now',
+      success:'🎉 Appointment booked!',
+      error:'⚠️ Fill all fields!'
+    },
+    messages:{
+      warn1:'⚠️ Enter your name!',
+      notifUnavailable:'Notifications is not available right now.'
+    },
+    dashboard:{
+      weekMoodTitle:'This week mood...',
+      quickActionsTitle:'Quick Actions',
+      qa1Title:'Mood Log',
+      qa1Sub:'Check in now',
+      qa2Title:'Journal',
+      qa2Sub:'Start writing...',
+      qa3Title:'Meditation',
+      qa3Sub:'Find peace',
+      qa4Title:'Therapist',
+      qa4Sub:'Book an Appointment',
+      lastMoodsTitle:'Last Mood Entries',
+      noMoodEntry:'No entry found.\\nAdd first mood entry.',
+      userRole:'Wellness Member'
+    },
+    meditation:{
+      title:'Start breathing',
+      exercises:'Exercises',
+      morningCalm:'Morning Calm',
+      anxietyRelief:'Anxiety Relief',
+      deepSleep:'Deep Sleep',
+      bodyScan:'Body Scan',
+      focusBoost:'Focus Boost',
+      lovingKindness:'Loving Kindness',
+      resetBtn:'↺ Reset'
+    },
+    groups:{
+      anxietyWarriors:'Anxiety Warriors',
+      anxietyDesc:'For those managing anxiety. Share experiences in a safe space.',
+      depressionSupport:'Depression Support',
+      depressionDesc:'A circle for those navigating depression. Weekly check-ins and peer support.',
+      griefLoss:'Grief & Loss',
+      griefDesc:'Compassion for those grieving. Share your heart without judgment.',
+      youngAdults:'Young Adults (18–25)',
+      youngDesc:'University stress, identity, career and relationships. You\'re not alone.'
+    },
+    crisis:{
+      title:'You are not alone',
+      crisisDesc:'If you\'re in crisis, please contact one of these helplines.They are free, confidential, and available 24/7.',
+      copingTitle:'Coping Strategies',
+      copingBreathing:'Breathing',
+      copingBreathingDesc:'4-7-8 technique',
+      copingJournal:'Journal',
+      copingJournalDesc:'Write your feelings'
+    }
+  },
+  ur:{
+    setup:{
+      title:'Care Connect',
+      intro:'➡️ اپنا نام درج کریں اور اپنی mental wellness کا سفر شروع کریں',
+      placeholder:'➡️ اپنا نام لکھیں...',
+      button:'➡️ شروع کریں →'
+    },
+    nav:{
+      main:'مین',
+      dashboard:'Dashboard',
+      moodTracker:'Mood Tracker',
+      journal:'Journal',
+      support:'سپورٹ',
+      therapists:'Therapists',
+      meditation:'Meditation',
+      groups:'Groups',
+      crisisHelp:'Crisis Help'
+    },
+    pages:{
+      dashboard:['Dashboard','Aapki wellness overview'],
+      mood:['Mood Tracker','Apna aaj ka mood log karein'],
+      journal:['Journal','Dil ki baat likhein'],
+      therapists:['Therapists Dhoondein','Professional se connect karein'],
+      meditation:['Meditation','Sukoon aur aram hasil karein'],
+      groups:['Support Groups','Aap akele nahi hain'],
+      crisis:['Crisis Help','Fori madad ke liye']
+    },
+    dashboard:{
+      welcome:'Khush amdeed!',
+      intro:'➡️ Apna pehla mood log karein aur wellness journey shuru karein..',
+      streak:'Daily Streak',
+      avgMood:'Avg Mood (7 Days)',
+      journals:'Journal Entries',
+      meditations:'Meditation Sessions',
+      weekMood:'Eis hafty mood...',
+      quickActions:'Quick Actions',
+      moodLog:'Mood Log',
+      loginNow:'aabhi log karein',
+      journalWrite:'Likhna shuru karein...',
+      meditate:'Sukoon hasil karein',
+      bookApp:'Appointment Book Karein',
+      noChart:'Koi data nahi. Mood log karein',
+      noEntry:'Koi entry nahi. Pehli mood entry karein. →',
+      lastMoods:'Last Mood Entries',
+      noRecent:'Koi record nahi. Mood log karein'
+    },
+    mood:{
+      title:'Aaj aap kya mehsoos kar rahe hain?',
+      verybad:'Bohot Bura',
+      sad:'Udaas',
+      okay:'Theek',
+      good:'Acha',
+      great:'Zabardast',
+      energyLevel:'Energy Level',
+      anxietyLevel:'Anxiety Level',
+      feeling:'Kya mehsoos ho raha hai?',
+      selectFeeling:'Which ones describe your feeling?',
+      tag1:'Calm',
+      tag2:'Anxiety',
+      tag3:'Gratitude',
+      tag4:'Tiredness',
+      tag5:'Hope',
+      tag6:'Stress',
+      tag7:'Happiness',
+      tag8:'Loneliness',
+      tag9:'Excitement',
+      tag10:'Emotional',
+      note:'Kuch likhein... (Optional)',
+      saveMood:'💾 Save Mood',
+      history:'Mood History',
+      noRecord:'Koi record nahi. Upar mood log karein!',
+      selectMood:'⚠️ Pehle mood select karein!',
+      saved:'✅ Mood save ho gaya!'
+    },
+    journal:{
+      newEntry:'Nai Entry',
+      oldEntriesLabel:'Purani Entries',
+      gratitudeLabel:'Gratitude',
+      challengeLabel:'Challenge',
+      tomorrowLabel:'Tomorrow',
+      happinessLabel:'Happiness',
+      prompt1:'Aaj main kis cheez ka shukrguzaar hoon:',
+      prompt2:'Aaj ka mushkil waqt tha:',
+      prompt3:'Kal ke liye mera irada hai:',
+      prompt4:'Aaj mujhe khushi mili jab:',
+      placeholder:'Apne dil ki baat likhein... yeh sirf aapki jagah hai. 🌿',
+      words:'alfaaz',
+      save:'📓 Entry Save Karein',
+      noEntry:'⚠️ Kuch likhein pehle!',
+      saved:'📓 Journal entry save ho gayi!',
+      oldEntries:'Purani Entries',
+      noEntries:'Koi journal entry nahi. Upar likh kar shuru karein!'
+    },
+    therapists:{
+      all:'Sab',
+      filterA:'Anxiety',
+      filterD:'Depression',
+      filterT:'Trauma',
+      filterR:'Relationships',
+      filterO:'Online',
+      available:'Available',
+      book:'Book Karein'
+    },
+    meditation:{
+      start:'Breathing shuru karein',
+      technique:'4-7-8 Breathing Technique',
+      begin:'▶ Shuru Karein',
+      pause:'⏸ Pause',
+      resume:'▶ Resume',
+      reset:'↺ Reset',
+      exercises:'Exercises',
+      morning:'Morning Calm',
+      anxiety:'Anxiety Relief',
+      sleep:'Deep Sleep',
+      bodyscan:'Body Scan',
+      focus:'Focus Boost',
+      loving:'Loving Kindness',
+      breathIn:'Saans andar lein...',
+      hold:'Roken...',
+      breathOut:'Saans bahar chhorein...',
+      session:'Session pause hai'
+    },
+    groups:{
+      anxiety:'Anxiety Warriors',
+      anxietyDesc:'Anxiety manage karne walon ke liye safe space. Apne tajrubaat share karein.',
+      members1:'👥 243 members',
+      depression:'Depression Support',
+      depressionDesc:'Depression se guzarne walon ka circle. Weekly check-in aur peer support.',
+      members2:'👥 189 members',
+      grief:'Grief & Loss',
+      griefDesc:'Nuqsan aur gham mein hamdardi. Bina kisi judgment ke dil ki baat karein.',
+      members3:'👥 97 members',
+      young:'Young Adults (18–25)',
+      youngDesc:'University stress, identity, career aur relationships. Tum akele nahi ho.',
+      members4:'👥 312 members',
+      join:'Join Karein',
+      joined:'✓ Joined',
+      joinedMsg:'🎉 Group mein shamil ho gaye!',
+      leftMsg:'👋 Group se nikal gaye'
+    },
+    crisis:{
+      title:'🆘 Aap Akele Nahi Hain',
+      intro:'Agar aap mushkil waqt mein hain, please in helplines pe call karein. Yeh free, confidential aur 24/7 available hain.',
+      umang:'Umang Pakistan',
+      umangTime:'Mon–Sat, 3 PM – 9 PM',
+      rescue:'Rescue Emergency',
+      rescueTime:'24/7 Available',
+      rozan:'Rozan Counselling',
+      rozanTime:'Weekdays 9 AM – 5 PM',
+      icall:'iCall (Online Chat)',
+      icallTime:'Mon–Sat 8 AM – 10 PM',
+      call:'Call Karein',
+      chat:'Chat Karein',
+      coping:'Abhi ke liye Coping',
+      breathing:'Breathing',
+      breathingTip:'4-7-8 technique'
+    },
+    booking:{
+      title:'Session Book Karein',
+      name:'Aapka Naam',
+      namePlaceholder:'Naam likhein',
+      email:'Email',
+      emailPlaceholder:'email@example.com',
+      date:'Tarikh',
+      time:'Waqt',
+      cancel:'Cancel',
+      confirm:'✓ Book Karein',
+      success:'🎉 Appointment book ho gayi!',
+      error:'⚠️ Sab fields zaroor bharein!'
+    },
+    messages:{
+      warn1:'⚠️ Naam zaroor likhein!',
+      notifUnavailable:'Notifications is not available rightnow.'
+    }
+  }
+};
+
+let currentLang='en';
+
+function setLanguage(lang){
+  currentLang=lang;
+  localStorage.setItem('cc_lang',lang);
+  updateUILanguage();
+  updatePageContent(getActivePage());
+  document.getElementById('engBtn').classList.toggle('active',lang==='en');
+  document.getElementById('urdBtn').classList.toggle('active',lang==='ur');
+}
+
+function toggleLanguage(event){
+  event.stopPropagation();
+  const newLang=currentLang==='en'?'ur':'en';
+  setLanguage(newLang);
+}
+
+function toggleSb(){document.getElementById('sidebar').classList.toggle('open')}
+
+function t(path){
+  const keys=path.split('.');
+  let val=LANG_DATA[currentLang];
+  for(let k of keys){val=val[k]||''}
+  return val;
+}
+
+function updateUILanguage(){
+  const updates={
+    'dGreet':()=>{
+      const u=DB.get('user');
+      if(!u)return;
+      const now=new Date();const h=now.getHours();
+      const gr=h<12?t('dashboard.welcome'):h<17?t('dashboard.welcome'):t('dashboard.welcome');
+      return gr+', '+u.name+' 👋';
+    },
+    'dMsg':()=>t('dashboard.intro'),
+    'ptitle':()=>t('pages.'+getActivePage()),
+    'psub':()=>t('pages.'+getActivePage())[1]
+  };
+  
+  for(let id in updates){
+    const el=document.getElementById(id);
+    if(el){
+      const newVal=updates[id]();
+      if(newVal)el.textContent=newVal;
+    }
+  }
+  
+  // Update sidebar navigation labels
+  const navLabels=currentLang==='en'?{main:'Main',support:'Support'}:{main:'Main',support:'Support'};
+  const navMain=document.getElementById('navMain');
+  const navSupport=document.getElementById('navSupport');
+  if(navMain) navMain.textContent=navLabels.main;
+  if(navSupport) navSupport.textContent=navLabels.support;
+  
+  // Update dashboard stats labels
+  const stats=['st1','st2','st3','st4'];
+  const statLabels=[t('dashboard.streak'),t('dashboard.avgMood'),t('dashboard.journals'),t('dashboard.meditations')];
+  document.querySelectorAll('.sbox .s-lbl').forEach((el,i)=>{
+    el.textContent=statLabels[i]||el.textContent;
+  });
+  
+  updateAllPageText();
+}
+
+function getActivePage(){
+  const active=document.querySelector('.page.active');
+  if(active&&active.id){
+    return active.id.replace('pg-','');
+  }
+  return 'dashboard';
+}
+
+function updateAllPageText(){
+  // Update mood tracker
+  document.querySelectorAll('#fTags .tag').forEach((tag,i)=>{
+    const keys=['tag1','tag2','tag3','tag4','tag5','tag6','tag7','tag8','tag9','tag10'];
+    tag.textContent=t('mood.'+keys[i])||tag.textContent;
+  });
+}
+
+const DB={
+  get(k){try{return JSON.parse(localStorage.getItem('cc_'+k))}catch{return null}},
+  set(k,v){localStorage.setItem('cc_'+k,JSON.stringify(v))},
+  arr(k){return DB.get(k)||[]}
+};
+
+const DOCS=[
+  {name:'Dr. Aisha Khan',spec:'Clinical Psychologist • 8 saal',rating:'⭐ 4.9',avail:'Aaj Available',tags:['Anxiety','Depression','CBT'],icon:'👩‍⚕️',bg:'var(--green-bg)'},
+  {name:'Dr. Bilal Raza',spec:'Psychiatrist • 12 saal',rating:'⭐ 4.8',avail:'Kal Available',tags:['Trauma','PTSD','Online'],icon:'🧑‍⚕️',bg:'var(--purple-bg)'},
+  {name:'Sara Malik LMFT',spec:'Family Therapist • 6 saal',rating:'⭐ 4.7',avail:'Aaj Available',tags:['Relationships','Grief','Online'],icon:'👩',bg:'var(--orange-bg)'},
+  {name:'Dr. Hassan Mirza',spec:'Neuropsychologist • 15 saal',rating:'⭐ 5.0',avail:'15 Apr',tags:['ADHD','Stress','Sleep'],icon:'👨‍⚕️',bg:'var(--blue-bg)'}
+];
+
+let selMood=null,bActive=false,bTimer=null,bStep=0;
+const bSteps=[
+  {t:'Saans andar lein...',s:'4 second ke liye',d:4000},
+  {t:'Roken...',s:'7 second ke liye',d:7000},
+  {t:'Saans bahar chhorein...',s:'8 second ke liye',d:8000}
+];
+
+window.addEventListener('load',()=>{
+  const savedLang=localStorage.getItem('cc_lang')||'en';
+  setLanguage(savedLang);
+  const u=DB.get('user');
+  if(u&&u.name) launch(u.name);
+  document.getElementById('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')startApp()});
+});
+
+function startApp(){
+  const n=document.getElementById('nameInput').value.trim();
+  const emptyMsg=currentLang==='en'?'⚠️ Please enter your name!':'⚠️ Naam zaroor likhein!';
+  if(!n){toast(emptyMsg);return;}
+  DB.set('user',{name:n});
+  launch(n);
+}
+
+function launch(name){
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  const init=name[0].toUpperCase();
+  document.getElementById('sbAv').textContent=init;
+  document.getElementById('topAv').textContent=init;
+  document.getElementById('sbNm').textContent=name;
+  updateDash(name);
+  loadDocs('all');
+  renderMH();
+  renderJL();
+  const now=new Date();
+  document.getElementById('jDt').textContent=now.toLocaleDateString('en-PK',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+const pTitles={
+  dashboard:['Dashboard','Aapki wellness overview'],
+  mood:['Mood Tracker','Apna aaj ka mood log karein'],
+  journal:['Journal','Dil ki baat likhein'],
+  therapists:['Therapists Dhoondein','Professional se connect karein'],
+  meditation:['Meditation','Sukoon aur aram hasil karein'],
+  groups:['Support Groups','Aap akele nahi hain'],
+  crisis:['Crisis Help','Fori madad ke liye']
+};
+
+function go(pg,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pg-'+pg).classList.add('active');
+  if(el){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));el.classList.add('active')}
+  
+  // Update page titles with current language
+  const titles=t('pages.'+pg);
+  if(titles){
+    document.getElementById('ptitle').textContent=titles[0];
+    document.getElementById('psub').textContent=titles[1];
+  }
+  
+  // Update all page-specific text based on current language
+  updatePageContent(pg);
+  
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function updatePageContent(pg){
+  if(pg==='mood') updateMoodPage();
+  else if(pg==='journal') updateJournalPage();
+  else if(pg==='therapists') updateTherapistsPage();
+  else if(pg==='meditation') updateMeditationPage();
+  else if(pg==='groups') updateGroupsPage();
+  else if(pg==='crisis') updateCrisisPage();
+  else if(pg==='dashboard') updateDashboardPage();
+}
+
+function updateDashboardPage(){
+  const els=document.querySelectorAll('#pg-dashboard [data-lang]');
+  els.forEach(el=>{
+    const key=el.getAttribute('data-lang');
+    el.textContent=t(key);
+  });
+  
+  // Update user role
+  const sbRole=document.getElementById('sbRole');
+  if(sbRole) sbRole.textContent=currentLang==='en'?'Wellness Member':'Wellness Member';
+  
+  // Update dashboard greeting
+  const dGreet=document.getElementById('dGreet');
+  if(dGreet) {
+    const u=DB.get('user');
+    dGreet.textContent=currentLang==='en'?`Good ${getGreeting()}, ${u.name} 👋`:`${getUrduGreeting()}, ${u.name} 👋`;
+  }
+  
+  // Update dashboard stats labels
+  document.querySelectorAll('#pg-dashboard .sbox .s-lbl').forEach((el,i)=>{
+    const labels=['st1-label','st2-label','st3-label','st4-label'];
+    const keys=currentLang==='en'?['Daily Streak','Avg Mood (7 Days)','Journal Entries','Meditation Sessions']:['Daily Streak','Avg Mood (7 Days)','Journal Entries','Meditation Sessions'];
+    el.textContent=keys[i];
+  });
+  
+  // Update titles
+  if(document.getElementById('weekMoodTitle')) document.getElementById('weekMoodTitle').textContent=currentLang==='en'?' This week mood...':' Is hafty mood...';
+  if(document.getElementById('quickActionsTitle')) document.getElementById('quickActionsTitle').textContent=currentLang==='en'?' Quick Actions':' Quick Actions';
+  if(document.getElementById('lastMoodsTitle')) document.getElementById('lastMoodsTitle').textContent=currentLang==='en'?' Last Mood Entries':' Last Mood Entries';
+  
+  // Update quick action cards
+  const qaLabels=currentLang==='en'?
+    [{t:'Mood Log',s:'Check in now'},{t:'Journal',s:'Start writing...'},{t:'Meditation',s:'Find peace'},{t:'Therapist',s:'Book an Appointment'}]:
+    [{t:'Mood Log',s:'Aabhi check karein'},{t:'Journal',s:'Likhna shuru karein...'},{t:'Meditation',s:'Sukoon hasil karein'},{t:'Therapist',s:'Appointment Book Karein'}];
+  document.querySelectorAll('#pg-dashboard .qa-btn').forEach((card,i)=>{
+    const titleEl=card.querySelector('.qa-lbl');
+    const subEl=card.querySelector('.qa-sub');
+    if(titleEl) titleEl.textContent=qaLabels[i].t;
+    if(subEl) subEl.textContent=qaLabels[i].s;
+  });
+  
+  // Update no mood entry message
+  const noMoodMsg=document.querySelector('#pg-dashboard .empty p');
+  if(noMoodMsg) noMoodMsg.innerHTML=currentLang==='en'?'No entry found.<br><a onclick="go(\'mood\',null)">Add first mood entry. →</a>':'Koi entry nahi.<br><a onclick="go(\'mood\',null)">Pehli mood entry karein. →</a>';
+}
+
+function updateMoodPage(){
+  // Update main title
+  if(document.getElementById('moodTitle')) document.getElementById('moodTitle').textContent=currentLang==='en'?' How are you feeling today?':' Aaj aap kya mehsoos kar rahe hain?';
+  
+  // Update emotion labels (Urdu/English)
+  const emotionLabels=currentLang==='en'?['Very Bad','Sad','Okay','Good','Great']:['Bohot Bura','Udaas','Theek','Acha','Zabardast'];
+  document.querySelectorAll('#pg-mood .mo .ml').forEach((el,i)=>{
+    el.textContent=emotionLabels[i];
+  });
+  
+  // Update energy & anxiety level labels
+  if(document.getElementById('energyLevelLabel')) document.getElementById('energyLevelLabel').textContent=currentLang==='en'?'Energy Level':'Energy Level';
+  if(document.getElementById('anxietyLevelLabel')) document.getElementById('anxietyLevelLabel').textContent=currentLang==='en'?'Anxiety Level':'Anxiety Level';
+  
+  // Update feeling question
+  if(document.getElementById('selectFeelingMsg')) document.getElementById('selectFeelingMsg').textContent=currentLang==='en'?'Which ones describe your feeling?':'Kya mehsoos ho raha hai?';
+  
+  // Update mood tags
+  const tagTexts=currentLang==='en'?
+    ['Calm','Anxiety','Gratitude','Tiredness','Hope','Stress','Happiness','Loneliness','Excitement','Emotional']:
+    ['Calm','Anxiety','Gratitude','Tiredness','Hope','Stress','Happiness','Loneliness','Excitement','Emotional'];
+  document.querySelectorAll('#pg-mood .tag').forEach((tag,i)=>{
+    tag.textContent=tagTexts[i];
+  });
+  
+  // Update textarea placeholder
+  const textarea=document.getElementById('mNote');
+  if(textarea) textarea.placeholder=currentLang==='en'?'Add something... (Optional)':'Kuch likhein... (Optional)';
+  
+  // Update save button
+  if(document.getElementById('saveMoodBtn')) document.getElementById('saveMoodBtn').textContent=currentLang==='en'?'💾 Save Mood':'💾 Save Mood';
+}
+
+function updateJournalPage(){
+  // Update main title
+  if(document.getElementById('journalNewEntry')) document.getElementById('journalNewEntry').textContent=currentLang==='en'?'New Entry':'Nai Entry';
+  
+  // Update prompt buttons with labels
+  const prompts=currentLang==='en'?
+    [{emoji:'💚',label:'Gratitude',text:'Today I am grateful for: '},{emoji:'💭',label:'Challenge',text:'Today was challenging because: '},{emoji:'🌅',label:'Tomorrow',text:'Tomorrow I hope to: '},{emoji:'😊',label:'Happiness',text:'I felt happy when: '}]:
+    [{emoji:'💚',label:'Gratitude',text:'Aaj main kis cheez ka shukrguzaar hoon: '},{emoji:'💭',label:'Challenge',text:'Aaj ka mushkil waqt tha: '},{emoji:'🌅',label:'Tomorrow',text:'Kal ke liye mera irada hai: '},{emoji:'😊',label:'Happiness',text:'Aaj mujhe khushi mili jab: '}];
+  
+  document.querySelectorAll('#pg-journal .pr-btn').forEach((btn,i)=>{
+    if(prompts[i]) {
+      const labelSpan=btn.querySelector('.prompt-btn-label');
+      if(labelSpan) labelSpan.textContent=prompts[i].label;
+    }
+  });
+  
+  // Update textarea placeholder
+  const textarea=document.getElementById('jArea');
+  if(textarea) textarea.placeholder=currentLang==='en'?'Share your thoughts here... This is your safe space. 🌿':'Apne dil ki baat likhein... yeh sirf aapki jagah hai. 🌿';
+  
+  // Update word count label
+  const wcLabel=document.querySelector('#pg-journal .wc');
+  if(wcLabel) wcLabel.textContent=currentLang==='en'?'0 words':'0 alfaaz';
+  
+  // Update save button
+  if(document.getElementById('saveJournalBtn')) document.getElementById('saveJournalBtn').textContent=currentLang==='en'?'📓 Save Entry':'📓 Entry Save Karein';
+  
+  // Update old entries title
+  if(document.getElementById('journalOldEntries')) document.getElementById('journalOldEntries').textContent=currentLang==='en'?'Past Entries':'Purani Entries';
+  
+  // Update empty state message
+  const emptyMsg=document.getElementById('journalEmptyMsg');
+  if(emptyMsg) emptyMsg.innerHTML=currentLang==='en'?'No journal entries yet.<br>Start writing above!':'Koi journal entry nahi.<br>Upar likh kar shuru karein!';
+}
+
+function updateTherapistsPage(){
+  const filterLabels=currentLang==='en'?['All','Anxiety','Depression','Trauma','Relationships','Online']:['Sab','Anxiety','Depression','Trauma','Relationships','Online'];
+  document.querySelectorAll('#pg-therapists .fc').forEach((btn,i)=>{
+    btn.textContent=filterLabels[i];
+  });
+  
+  // Update availability text and book button (done in loadDocs)
+  const bookBtns=document.querySelectorAll('#pg-therapists .bk-btn');
+  const bookText=currentLang==='en'?'Book Now':'Book Karein';
+  bookBtns.forEach(btn=>{
+    btn.textContent=bookText;
+  });
+  
+  // Update availability status
+  const availTexts=document.querySelectorAll('#pg-therapists .t-av2');
+  const availLabel=currentLang==='en'?'Available':'Available';
+  availTexts.forEach(el=>{
+    if(el.textContent.includes('●')) {
+      const status=el.textContent.split('●')[1].trim();
+      el.textContent='● '+status;
+    }
+  });
+}
+
+function updateMeditationPage(){
+  // Update breathing title
+  if(document.getElementById('bT')) document.getElementById('bT').textContent=currentLang==='en'?'Start breathing':'Breathing shuru karein';
+  
+  // Update start button
+  if(document.getElementById('bBtn')) document.getElementById('bBtn').textContent=currentLang==='en'?'▶ Start':'▶ Shuru Karein';
+  
+  // Update reset button
+  if(document.getElementById('resetBtn')) document.getElementById('resetBtn').textContent=currentLang==='en'?'↺ Reset':'↺ Reset';
+  
+  // Update exercises title
+  if(document.getElementById('meditationExercises')) document.getElementById('meditationExercises').textContent=currentLang==='en'?'Exercises':'Exercises';
+  
+  // Update exercise names
+  const exerciseTitles=currentLang==='en'?
+    ['Morning Calm','Anxiety Relief','Deep Sleep','Body Scan','Focus Boost','Loving Kindness']:
+    ['Morning Calm','Anxiety Relief','Deep Sleep','Body Scan','Focus Boost','Loving Kindness'];
+  
+  document.querySelectorAll('#pg-meditation .ex-nm').forEach((el,i)=>{
+    el.textContent=exerciseTitles[i];
+  });
+}
+  
+  // Update button texts
+  const btns=document.querySelectorAll('#pg-meditation .bb .btn');
+  if(btns[0]) btns[0].textContent=currentLang==='en'?'▶ Start':'▶ Shuru Karein';
+  if(btns[1]) btns[1].textContent='↺ Reset';
+  
+  // Update exercises title
+  const exTitle=document.querySelector('#pg-meditation > .ct');
+  if(exTitle) exTitle.childNodes[1].textContent=currentLang==='en'?' Exercises':' Exercises';
+
+
+function updateGroupsPage(){
+  const groups=currentLang==='en'?[
+    {name:'Anxiety Warriors',desc:'For those managing anxiety. Share experiences in a safe space.',members:'👥 243 members'},
+    {name:'Depression Support',desc:'A circle for those navigating depression. Weekly check-ins and peer support.',members:'👥 189 members'},
+    {name:'Grief & Loss',desc:'Compassion for those grieving. Share your heart without judgment.',members:'👥 97 members'},
+    {name:'Young Adults (18–25)',desc:'University stress, identity, career and relationships. You\'re not alone.',members:'👥 312 members'}
+  ]:[
+    {name:'Anxiety Warriors',desc:'Anxiety manage karne walon ke liye safe space. Apne tajrubaat share karein.',members:'👥 243 members'},
+    {name:'Depression Support',desc:'Depression se guzarne walon ka circle. Weekly check-in aur peer support.',members:'👥 189 members'},
+    {name:'Grief & Loss',desc:'Nuqsan aur gham mein hamdardi. Bina kisi judgment ke dil ki baat karein.',members:'👥 97 members'},
+    {name:'Young Adults (18–25)',desc:'University stress, identity, career aur relationships. Tum akele nahi ho.',members:'👥 312 members'}
+  ];
+  
+  document.querySelectorAll('#pg-groups .gc').forEach((card,i)=>{
+    if(groups[i]){
+      const nameEl=card.querySelector('.gn');
+      const descEl=card.querySelector('.gd');
+      const countEl=card.querySelector('.gc-cnt');
+      const joinBtn=card.querySelector('.jn');
+      
+      if(nameEl) nameEl.textContent=groups[i].name;
+      if(descEl) descEl.textContent=groups[i].desc;
+      if(countEl) countEl.textContent=groups[i].members;
+      if(joinBtn) joinBtn.textContent=currentLang==='en'?'Join':'Join Karein';
+    }
+  });
+}
+
+function updateCrisisPage(){
+  // Update title
+  if(document.getElementById('crisisTitle')) document.getElementById('crisisTitle').textContent=currentLang==='en'?'You are not alone':'🆘 Aap Akele Nahi Hain';
+  
+  // Update description
+  if(document.getElementById('crisisDesc')) document.getElementById('crisisDesc').textContent=currentLang==='en'?'If you\'re in crisis, please contact one of these helplines. They are free, confidential, and available 24/7.':'Agar aap mushkil waqt mein hain, please in helplines pe call karein. Yeh free, confidential aur 24/7 available hain.';
+  
+  // Update coping title
+  if(document.getElementById('crisisCopingTitle')) document.getElementById('crisisCopingTitle').textContent=currentLang==='en'?'Coping Strategies':'Abhi ke liye Coping';
+  
+  // Update coping labels
+  if(document.getElementById('copingBreathing')) document.getElementById('copingBreathing').textContent=currentLang==='en'?'Breathing':'Breathing';
+  if(document.getElementById('copingBreathingDesc')) document.getElementById('copingBreathingDesc').textContent=currentLang==='en'?'4-7-8 technique':'4-7-8 technique';
+  if(document.getElementById('copingJournal')) document.getElementById('copingJournal').textContent=currentLang==='en'?'Journal':'Journal';
+  if(document.getElementById('copingJournalDesc')) document.getElementById('copingJournalDesc').textContent=currentLang==='en'?'Write your feelings':'Dil ki baat likhein';
+  
+  // Build helplines dynamically
+  const helplines=currentLang==='en'?[
+    {ic:'🇵🇰',nm:'Umang Pakistan',no:'0317-4288665',hr:'Mon–Sat, 3 PM – 9 PM',btn:'Call'},
+    {ic:'🏥',nm:'Rescue Emergency',no:'1122',hr:'24/7 Available',btn:'Call'},
+    {ic:'💬',nm:'Rozan Counselling',no:'051-2890505',hr:'Weekdays 9 AM – 5 PM',btn:'Call'},
+    {ic:'🌐',nm:'iCall (Online Chat)',no:'icallhelpline.org',hr:'Mon–Sat 8 AM – 10 PM',btn:'Chat'}
+  ]:[
+    {ic:'🇵🇰',nm:'Umang Pakistan',no:'0317-4288665',hr:'Mon–Sat, 3 PM – 9 PM',btn:'Call Karein'},
+    {ic:'🏥',nm:'Rescue Emergency',no:'1122',hr:'24/7 Available',btn:'Call Karein'},
+    {ic:'💬',nm:'Rozan Counselling',no:'051-2890505',hr:'Weekdays 9 AM – 5 PM',btn:'Call Karein'},
+    {ic:'🌐',nm:'iCall (Online Chat)',no:'icallhelpline.org',hr:'Mon–Sat 8 AM – 10 PM',btn:'Chat Karein'}
+  ];
+  
+  const hlGrid=document.getElementById('crisisHelplines');
+  if(hlGrid) {
+    hlGrid.innerHTML=helplines.map(h=>`
+      <div class="hl">
+        <div class="hl-ic">${h.ic}</div>
+        <div class="hl-nm">${h.nm}</div>
+        <div class="hl-no">${h.no}</div>
+        <div class="hl-hr">${h.hr}</div>
+        <button class="cbtn" onclick="toast('📞 ${currentLang==='en'?'Connecting...':'Connect ho rahe hain...'}')">${h.btn}</button>
+      </div>
+    `).join('');
+  }
+}
+
+function getGreeting(){
+  const h=new Date().getHours();
+  return h<12?'Morning':h<17?'Afternoon':'Evening';
+}
+
+function getUrduGreeting(){
+  const h=new Date().getHours();
+  return h<12?'Subah Bakhair':h<17?'Dopahar Mubarak':'Sham Bakhair';
+}
+
+function updateDash(name){
+  const now=new Date();
+  const h=now.getHours();
+  const gr=currentLang==='en'?(h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening'):(h<12?'Subah Bakhair':h<17?'Dopahar Mubarak':'Sham Bakhair');
+  document.getElementById('dGreet').textContent=gr+', '+name+' 👋';
+  
+  const moods=DB.arr('moods'),journals=DB.arr('journals'),sessions=DB.get('sessions')||0;
+  const noMoodMsg=currentLang==='en'?'Log your first mood and start your wellness journey..':'Apna pehla mood log karein aur wellness journey shuru karein.';
+  const goodMsg=currentLang==='en'?'You\'re doing well! Every day a little progress counts. 💚':'Aap acha kar rahe hain! Har din thodi progress kafi hoti hai. 💚';
+  document.getElementById('dMsg').textContent=moods.length===0?noMoodMsg:goodMsg;
+
+  // streak
+  let streak=0;
+  if(moods.length>0){
+    const dates=[...new Set(moods.map(m=>m.date))].sort().reverse();
+    const td=new Date().toDateString();
+    if(dates[0]===td){
+      streak=1;
+      for(let i=1;i<dates.length;i++){
+        if((new Date(dates[i-1])-new Date(dates[i]))===86400000)streak++;
+        else break;
+      }
+    }
+  }
+  document.getElementById('st1').textContent=streak;
+
+  const week=moods.filter(m=>(new Date()-new Date(m.date))<7*86400000);
+  document.getElementById('st2').textContent=week.length?(week.reduce((a,b)=>a+b.score,0)/week.length).toFixed(1):'—';
+  document.getElementById('st3').textContent=journals.length;
+  document.getElementById('st4').textContent=sessions;
+  renderChart(moods);
+
+  const rc=document.getElementById('dRecent');
+  rc.innerHTML=moods.length===0?`<div class="empty"><div class="ei">😐</div><p>Koi entry nahi.<br><a onclick="go('mood',null)">Pehli mood entry karein →</a></p></div>`:moods.slice(0,3).map(mItem).join('');
+}
+
+function renderChart(moods){
+  const d=document.getElementById('dChart');
+  const emptyMsg=currentLang==='en'?'No data available. Log Mood':'Koi data nahi. Mood log karein';
+  if(!moods.length){d.innerHTML=`<div class="empty"><div class="ei">📊</div><p>${emptyMsg}</p></div>`;return;}
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const today=new Date();
+  const bars=[];
+  for(let i=6;i>=0;i--){
+    const d2=new Date(today);d2.setDate(d2.getDate()-i);
+    const ds=d2.toDateString();
+    const dm=moods.filter(m=>m.date===ds);
+    bars.push({day:days[d2.getDay()===0?6:d2.getDay()-1],val:dm.length?Math.round(dm.reduce((a,b)=>a+b.score,0)/dm.length):0});
+  }
+  const cls=['#4CAF84','#7C6FF7','#4A9EDF','#F5924E','#E05C6A','#7C6FF7','#4CAF84'];
+  d.innerHTML=`<div style="display:flex;align-items:flex-end;gap:7px;height:85px;margin-top:6px">${bars.map((b,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:100%;border-radius:5px 5px 0 0;min-height:5px;background:${b.val?cls[i]:'var(--border)'};height:${b.val*8}px;transition:height .5s" title="${b.val}"></div><div style="font-size:9px;color:var(--text3)">${b.day}</div></div>`).join('')}</div>`;
+}
+
+function mItem(m){
+  const c={1:'#E05C6A',3:'#F5924E',5:'#4A9EDF',7:'#4CAF84',10:'#7C6FF7'};
+  const l={1:'Mushkil',3:'Theek Nahi',5:'Average',7:'Acha Din',10:'Zabardast'};
+  const cl=[1,3,5,7,10].reduce((a,b)=>Math.abs(b-m.score)<Math.abs(a-m.score)?b:a);
+  return `<div class="mh-item"><div class="mh-em">${m.emoji}</div><div class="mh-info"><div class="mh-top">${m.label} — Energy ${m.energy}, Anxiety ${m.anxiety}</div><div class="mh-tags">${m.tags.length?'Tags: '+m.tags.join(', '):m.note||'Koi note nahi'}</div></div><div class="mh-meta"><div class="mh-date">${m.date===new Date().toDateString()?'Aaj':m.date}, ${m.time}</div><span class="mh-sc" style="background:${c[cl]}20;color:${c[cl]}">${l[cl]}</span></div></div>`;
+}
+
+function pickM(el,score,emoji,label){
+  document.querySelectorAll('.mo').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  selMood={score,emoji,label};
+}
+
+function saveMood(){
+  if(!selMood){toast(currentLang==='en'?'⚠️ Select a mood first!':'⚠️ Pehle mood select karein!');return;}
+  const tags=[...document.querySelectorAll('#fTags .tag.on')].map(t=>t.textContent);
+  const entry={id:Date.now(),date:new Date().toDateString(),time:new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit'}),score:selMood.score,emoji:selMood.emoji,label:selMood.label,energy:document.getElementById('evR').value,anxiety:document.getElementById('axR').value,tags,note:document.getElementById('mNote').value.trim()};
+  const arr=DB.arr('moods');arr.unshift(entry);DB.set('moods',arr);
+  document.querySelectorAll('.mo').forEach(o=>o.classList.remove('sel'));
+  document.querySelectorAll('#fTags .tag').forEach(t=>t.classList.remove('on'));
+  document.getElementById('mNote').value='';
+  document.getElementById('evR').value=5;document.getElementById('axR').value=5;
+  document.getElementById('evL').textContent='5';document.getElementById('axL').textContent='5';
+  selMood=null;
+  renderMH();updateDash(DB.get('user').name);
+  toast(currentLang==='en'?'✅ Mood saved!':'✅ Mood save ho gaya!');
+}
+
+function renderMH(){
+  const m=DB.arr('moods');
+  document.getElementById('moodHist').innerHTML=m.length?m.map(mItem).join(''):`<div class="empty"><div class="ei">📋</div><p>Koi record nahi.<br>Upar mood log karein!</p></div>`;
+}
+
+document.getElementById('jArea').addEventListener('input',function(){
+  const w=this.value.trim().split(/\s+/).filter(x=>x).length;
+  document.getElementById('jWc').textContent=w+' alfaaz';
+});
+
+function addP(t){const a=document.getElementById('jArea');a.value+=t;a.focus()}
+
+function saveJ(){
+  const text=document.getElementById('jArea').value.trim();
+  const emptyMsg=currentLang==='en'?'⚠️ Write something first!':'⚠️ Kuch likhein pehle!';
+  if(!text){toast(emptyMsg);return;}
+  const title=text.split(/[.!?\n]/)[0].slice(0,50)||'Untitled';
+  const entry={id:Date.now(),date:new Date().toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'}),dateRaw:new Date().toDateString(),time:new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit'}),title,text};
+  const arr=DB.arr('journals');arr.unshift(entry);DB.set('journals',arr);
+  document.getElementById('jArea').value='';document.getElementById('jWc').textContent=currentLang==='en'?'0 words':'0 alfaaz';
+  renderJL();updateDash(DB.get('user').name);
+  const saveMsg=currentLang==='en'?'📓 Journal entry saved!':'📓 Journal entry save ho gayi!';
+  toast(saveMsg);
+}
+
+function renderJL(){
+  const e=DB.arr('journals');
+  document.getElementById('jList').innerHTML=e.length?e.map(j=>`<div class="je"><div class="je-hd"><div class="je-title">${j.title}</div><div class="je-date">${j.date}, ${j.time}</div></div><div class="je-prev">${j.text.slice(0,110)}${j.text.length>110?'...':''}</div></div>`).join(''):`<div class="empty"><div class="ei">📚</div><p>Koi journal entry nahi.<br>Upar likh kar shuru karein!</p></div>`;
+}
+
+function loadDocs(filter){
+  const grid=document.getElementById('tGrid');
+  const list=filter==='all'?DOCS:DOCS.filter(t=>t.tags.includes(filter));
+  if(!list.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🔍</div><p>Is category mein koi therapist nahi.</p></div>`;return;}
+  grid.innerHTML=list.map(t=>`<div class="tc"><div class="t-hd"><div class="t-av" style="background:${t.bg}">${t.icon}</div><div><div class="t-nm">${t.name}</div><div class="t-sp">${t.spec}</div><div class="t-st">${t.rating}</div></div></div><div class="t-tgs">${t.tags.map(tg=>`<span class="t-tg">${tg}</span>`).join('')}</div><div class="t-ft"><span class="t-av2" style="color:var(--green)">● ${t.avail}</span><button class="bk-btn" onclick="openBk('${t.name}')">Book Karein</button></div></div>`).join('');
+}
+
+function fT(el,f){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('on'));el.classList.add('on');loadDocs(f)}
+
+function openBk(nm){
+  document.getElementById('bkDr').textContent=nm+' ke saath appointment';
+  const u=DB.get('user');if(u)document.getElementById('bkNm').value=u.name;
+  document.getElementById('bkDt').value=new Date().toISOString().split('T')[0];
+  document.getElementById('bkOv').classList.add('open');
+}
+function closeMod(){document.getElementById('bkOv').classList.remove('open')}
+function confirmBk(){
+  if(!document.getElementById('bkNm').value.trim()||!document.getElementById('bkEm').value.trim()){
+    const errMsg=currentLang==='en'?'⚠️ Fill all fields!':'⚠️ Sab fields zaroor bharein!';
+    toast(errMsg);return;}
+  closeMod();
+  const successMsg=currentLang==='en'?'🎉 Appointment booked!':'🎉 Appointment book ho gayi!';
+  toast(successMsg);
+}
+document.getElementById('bkOv').addEventListener('click',function(e){if(e.target===this)closeMod()});
+
+function toggleB(){
+  bActive=!bActive;
+  const ring=document.getElementById('bRing'),btn=document.getElementById('bBtn');
+  if(bActive){ring.classList.add('go');btn.textContent='⏸ Pause';runB();}
+  else{ring.classList.remove('go');btn.textContent='▶ Resume';clearTimeout(bTimer);document.getElementById('bT').textContent='Session pause hai';}
+}
+function runB(){
+  if(!bActive)return;
+  const s=bSteps[bStep%3];
+  document.getElementById('bT').textContent=s.t;document.getElementById('bS').textContent=s.s;
+  bStep++;bTimer=setTimeout(runB,s.d);
+}
+function resetB(){
+  bActive=false;clearTimeout(bTimer);bStep=0;
+  document.getElementById('bRing').classList.remove('go');
+  const startText=currentLang==='en'?'Start Breathing':'Breathing shuru karein';
+  const techText='4-7-8 Breathing Technique';
+  const btnText=currentLang==='en'?'▶ Start':'▶ Shuru Karein';
+  document.getElementById('bT').textContent=startText;
+  document.getElementById('bS').textContent=techText;
+  document.getElementById('bBtn').textContent=btnText;
+}
+function doEx(name,icon,dur){
+  const s=(DB.get('sessions')||0)+1;DB.set('sessions',s);
+  updateDash(DB.get('user').name);
+  const msg=currentLang==='en'?`🧘 ${icon} ${name} (${dur}) started!`:`🧘 ${icon} ${name} (${dur}) shuru ho gaya!`;
+  toast(msg);
+}
+
+function joinG(btn){
+  if(btn.classList.contains('on')){
+    btn.classList.remove('on');
+    btn.textContent=currentLang==='en'?'Join Now':'Join Karein';
+    const leftMsg=currentLang==='en'?'👋 Left group':'👋 Group se nikal gaye';
+    toast(leftMsg);
+  } else{
+    btn.classList.add('on');
+    btn.textContent=currentLang==='en'?'✓ Joined':'✓ Joined';
+    const joinedMsg=currentLang==='en'?'🎉 Joined group!':'🎉 Group mein shamil ho gaye!';
+    toast(joinedMsg);
+  }
+}
+
+function toast(msg){
+  const t=document.getElementById('toastEl');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
