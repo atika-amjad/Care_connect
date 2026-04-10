@@ -1,5 +1,9 @@
 # 🧠 Care Connect - Mental Wellness Platform
 
+## Video Demo
+
+<iframe width="855" height="481" src="https://www.youtube.com/embed/4VTAKrCt2AM" title="care connect demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## 📋 Overview
 
 **Care Connect** is a comprehensive, bilingual (English/Urdu) mental wellness platform designed to help users track their emotional well-being, journal their thoughts, connect with therapists, practice mindfulness, and access crisis support—all in one intuitive web application.
